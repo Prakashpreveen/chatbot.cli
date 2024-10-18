@@ -7,6 +7,8 @@ import tensorflow as tf
 import nltk
 from nltk.stem import WordNetLemmatizer
 
+
+nltk.download('punkt')
 lemmatizer = WordNetLemmatizer()
 
 intents = json.loads(open('intents.json').read())
@@ -53,6 +55,17 @@ training = np.array(training)
 trainX = training[:,:len(words)]
 trainY = training[:,len(words):]
 
+model = tf.keras.Sequential()
+model.add(tf.keras.layer.Dense(128,input_shape=(len(trainX[0]),),activation = 'relu'))
+model.add(tf.keras.layer.Dropout(0.5))
+model.add(tf.keras.layer.Dense(64,activation = 'relu'))
+model.add(tf.keras.layer.Dense(len(trainY[0]),activation='softmax'))
 
+smg = tf.keras.optimizers.SGD(learning_rate=0.01,momentum=0.9,nesterov=True)
+model.compile(loss='categorical_crossentropy',optimizer=sgd,metrics=['accuracy'])
+
+hist = model.fit(np.array(trainX), np.array(trainY), epochs=200, batch_size=5, verbose=1)
+model.save('chatbot_model.h5', hist)
+print('Done')
 
 
